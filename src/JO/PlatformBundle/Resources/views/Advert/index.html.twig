@@ -1,18 +1,27 @@
 {# src/JO/PlatformBundle/Resources/views/Advert/index.html.twig #}
 
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Bienvenue sur ma première page avec OpenClassrooms !</title>
-    </head>
-    <body>
-        <h1>Hello!</h1>
-        
-        <p>
-            Le Hello World est un grand classique en programmation.
-            Il signifie énormément, car cela veut dire que vous avez
-            réussi à exécuter le programme pour accomplir une tàche simple :
-            afficher ce hello world !
-        </p>
-    </body>
-</html>
+{% extends "JOPlatformBundle::layout.html.twig" %}
+
+{% block title %}
+  Accueil - {{ parent() }}
+{% endblock %}
+
+{% block joplatform_body %}
+
+  <h2>Liste des annonces</h2>
+
+  <ul>
+    {% for advert in listAdverts %}
+      <li>
+        <a href="{{ path('jo_platform_view', {'id': advert.id}) }}">
+          {{ advert.title }}
+        </a>
+        par {{ advert.author }},
+        le {{ advert.date|date('d/m/Y') }}
+      </li>
+    {% else %}
+      <li>Pas (encore !) d'annonces</li>
+    {% endfor %}
+  </ul>
+
+{% endblock %}

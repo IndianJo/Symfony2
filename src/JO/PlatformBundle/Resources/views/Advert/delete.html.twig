@@ -1,0 +1,26 @@
+{# src/JO/PlatformBundle/Resources/views/Advert/delete.html.twig #}
+
+{% extends "JOPlatformBundle::layout.html.twig" %}
+
+{% block title %}
+  Supprimer une annonce - {{ parent() }}
+{% endblock %}
+
+{% block joplatform_body %}
+
+  <h2>Supprimer une annonce</h2>
+
+  {{ include("JOPlatformBundle:Advert:form.html.twig") }}
+
+  <p>
+    Vous allez supprimer une annonce !
+  </p>
+
+  <p>
+    <a href="{{ path('jo_platform_view', {'id': advert.id}) }}" class="btn btn-default">
+      <i class="glyphicon glyphicon-chevron-left"></i>
+      Retour à l'annonce
+    </a>
+  </p>
+
+{% endblock %}
