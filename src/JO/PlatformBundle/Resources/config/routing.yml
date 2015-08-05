@@ -1,0 +1,40 @@
+# src/JO/PlatformBundle/Resources/config/routing.yml
+
+byebye_world:
+    path:     /byebye-world
+    defaults: { _controller: JOPlatformBundle:Advert:byebye }
+
+jo_platform_home:
+    path:      /{page}
+    defaults:  { _controller: JOPlatformBundle:Advert:index, page: 1}
+    requirements:
+         page: \d*
+
+jo_platform_view:
+    path:      /advert/{id}
+    defaults:  { _controller: JOPlatformBundle:Advert:view }
+    requirements:
+         id: \d+
+
+jo_platform_view_slug:
+    path:      /{year}/{slug}.{_format}
+    defaults:  { _controller: JOPlatformBundle:Advert:viewSlug, _format: html }
+    requirements:
+        year:    \d{4}
+        _format:  html|xml
+
+jo_platform_add:
+    path:      /add
+    defaults:  { _controller: JOPlatformBundle:Advert:add }
+
+oc_platform_edit:
+    path:      /edit/{id}
+    defaults:  { _controller: JOPlatformBundle:Advert:edit }
+    requirements:
+        id: \d+
+
+oc_platform_delete:
+    path:      /delete/{id}
+    defaults:  { _controller: JOPlatformBundle:Advert:delete }
+    requirements:
+        id: \d+
