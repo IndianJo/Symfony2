@@ -70,6 +70,16 @@ class AdvertController extends Controller
 			$request->getSession()->getFlashBag()->add('notice', 'Annonce bien enregistrée.');
 			return $this->redirect($this->generateUrl('jo_platform_view', array('id' => 5)));
 		}
+		
+		// récupération du service antispam
+		$antispam = $this->container->get('jo_platform.antispam');
+		
+		//exempe d'utilisation du service
+		$text = '...';
+		if($antispam->isSpam($text))
+		{
+			throw new \Exception('Votre message a été détecté comme spam !');
+		}
 		$advert = array(
 			'title'   => 'Recherche développpeur Symfony2',
 			'id'      => 2,
