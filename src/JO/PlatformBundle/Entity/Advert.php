@@ -3,6 +3,7 @@
 namespace JO\PlatformBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Advert
@@ -12,10 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Advert
 {
-	public function __construct()
-	{
-		$this->date = new \Datetime();
-	}
     /**
      * @var integer
      *
@@ -24,6 +21,21 @@ class Advert
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+   
+     /**
+    * @ORM\OneToOne(targetEntity="JO\PlatformBundle\Entity\Image", cascade={"persist"})
+    */
+    private $image;
+
+    /**
+    * @ORM\ManyToMany(targetEntity="JO\PlatformBundle\Entity\Category", cascade={"persist"})
+    */
+    private $categories;
+
+    /**
+    * @ORM\OneToMany(targetEntity="JO\PlatformBundle\Entity\Application", mappedBy="advert")
+    */
+    private $applications;
 
     /**
      * @var \DateTime
@@ -58,6 +70,13 @@ class Advert
 	* @ORM\Column(name="published", type="boolean")
 	*/
 	private $published = true;
+
+    public function __construct()
+    {
+        $this->date = new \Datetime();
+        $this->categories = new ArrayCollection();
+        $this->applications = new ArrayCollection();
+    }
 	
     /**
      * Get id
@@ -182,5 +201,83 @@ class Advert
     public function getPublished()
     {
         return $this->published;
+    }
+
+    public function setImage(Image $image = null)
+    {
+      $this->image = $image;
+    }
+    public function getImage()
+    {
+      return $this->image;
+    }
+
+    /**
+     * Add categories
+     *
+     * @param \JO\PlatformBundle\Entity\Category $categories
+     * @return Advert
+     */
+    public function addCategory(Category $category)
+    {
+        $this->categories[] = $category;
+
+        return $this;
+    }
+
+    /**
+     * Remove categories
+     *
+     * @param \JO\PlatformBundle\Entity\Category $categories
+     */
+    public function removeCategory(Category $category)
+    {
+        $this->categories->removeElement($category);
+    }
+
+    /**
+     * Get categories
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getCategories()
+    {
+        return $this->categories;
+    }
+
+    /**
+     * Add applications
+     *
+     * @param \JO\PlatformBundle\Entity\Application $application
+     * @return Advert
+     */
+    public function addApplication(\JO\PlatformBundle\Entity\Application $application)
+    {
+        $this->applications[] = $application;
+
+        // L'annonce doit être lié à l'application (relation bi-directionel)
+        $application->setAdvert($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove applications
+     *
+     * @param \JO\PlatformBundle\Entity\Application $application
+     */
+    public function removeApplication(\JO\PlatformBundle\Entity\Application $application)
+    {
+        $this->applications->removeElement($application);
+    }
+
+    /**
+     * Get applications
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getApplications()
+    {
+        return $this->applications;
     }
 }

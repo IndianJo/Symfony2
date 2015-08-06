@@ -9,6 +9,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Request;
 
 use JO\PlatformBundle\Entity\Advert;
+use JO\PlatformBundle\Entity\Image;
+use JO\PlatformBundle\Entity\AdvertSkill;
 
 class AdvertController extends Controller
 {
@@ -16,14 +18,21 @@ class AdvertController extends Controller
 	// récupération de l'annonce correspondant a l'id
     public function viewAction($id)
 	{
-		$repository = $this->getDoctrine()->getManager()->getRepository('JOPlatformBundle:Advert');
-		
+		$em = $this->getDoctrine()->getManager();
+		$repository = $em->getRepository('JOPlatformBundle:Advert');
+
 		$advert = $repository->find($id);
 		
 		if($advert === null)
 			throw new NotFoundHttpException("L'annonce d'id ".$id." n'existe pas");
 		
-		return $this->render('JOPlatformBundle:Advert:view.html.twig', array('advert'=>$advert));
+		//on récup la liste des application
+		$listApplications = $em->getRepository('JOPlatformBundle:Application')->findBy(array('advert'=>$advert));
+		// On récupère maintenant la liste des AdvertSkill
+		$listAdvertSkills = $em->getRepository('JOPlatformBundle:AdvertSkill')->findBy(array('advert' => $advert));
+    ;
+
+		return $this->render('JOPlatformBundle:Advert:view.html.twig', array('advert'=>$advert, 'listApplications' => $listApplications, 'listAdvertSkills'=> $listAdvertSkills));
 	}
 	
 	// On récupère tous les paramètres en arguments de la méthode
@@ -74,13 +83,44 @@ class AdvertController extends Controller
 			return $this->redirect($this->generateUrl('jo_platform_view', array('id' => 5)));
 		}
 		
+		// création de l'annonce
 		$advert = new Advert();
 		$advert->setTitle('Recherche développpeur Symfony2');
 		$advert->setAuthor('Alexandre');
 		$advert->setContent( 'Nous recherchons un développeur Symfony2 débutant sur Lyon. Blabla…');
 
-		// on récupère l'entity manager
+		//création de l'image
+		$image = new Image();
+		$image->setUrl('http://sdz-upload.s3.amazonaws.com/prod/upload/job-de-reve.jpg');
+		$image->setAlt('Job de rêve');
+
 		$em = $this->getDoctrine()->getManager();
+		//$em->persist($image);
+
+		//Ajout de l'image à l'annonce
+		$advert->setImage($image);
+
+		// Gestion des compétences
+		$listSkills = $em->getRepository('JOPlatformBundle:Skill')->findAll();
+
+		foreach ($listSkills as $skill) {
+			// On crée une nouvelle « relation entre 1 annonce et 1 compétence »
+			$advertSkill = new AdvertSkill();
+
+			// On la lie à l'annonce, qui est ici toujours la même
+			$advertSkill->setAdvert($advert);
+			// On la lie à la compétence, qui change ici dans la boucle foreach
+			$advertSkill->setSkill($skill);
+
+			// Arbitrairement, on dit que chaque compétence est requise au niveau 'Expert'
+			$advertSkill->setLevel('Expert');
+
+			// Et bien sûr, on persiste cette entité de relation, propriétaire des deux autres relations
+			$em->persist($advertSkill);
+  		}
+
+
+
 		//on persiste l'entité (confie la gestion à doctrine)
 		$em->persist($advert);
 		
@@ -105,29 +145,47 @@ class AdvertController extends Controller
 		if ($request->isMethod('POST'))
 		{
 			$request->getSession()->getFlashBag()->add('notice', 'Annonce bien modifée');
-			
 			return $this->redirect($this->generateUrl('jo_platform_view', array('id'=>5)));
 		}
+
+		$em = $this->getDoctrine()->getManager();
+
+		$advert = $em->getRepository('JOPlatformBundle:Advert')->Find($id);
+		if ($advert === null)
+			throw new NotFoundHttpException("L'annonce d'id ".$id." n'exist pas");
+
+		// Récupération de toutes les catégories présente dans la base.
+		$listCategories = $em->getRepository('JOPlatformBundle:Category')->findAll();
 		
-		$advert = array(
+		// on lie les catégories à l'annonce.
+		foreach ($listCategories as $category) {
+			$advert->addCategory($category);
+		}
+		/*$advert = array(
 			'title'   => 'Recherche développpeur Symfony2',
 			'id'      => $id,
 			'author'  => 'Alexandre',
 			'content' => 'Nous recherchons un développeur Symfony2 débutant sur Lyon. Blabla…',
 			'date'    => new \Datetime());
-			
+		*/
+		
+		$em->flush();
+
 		return $this->render('JOPlatformBundle:Advert:edit.html.twig', array('advert'=>$advert));
 	}
 	
 	public function deleteAction($id)
 	{
-		$advert = array(
-			'title'   => 'Recherche développpeur Symfony2',
-			'id'      => $id,
-			'author'  => 'Alexandre',
-			'content' => 'Nous recherchons un développeur Symfony2 débutant sur Lyon. Blabla…',
-			'date'    => new \Datetime());
+		$em = $this->getDoctrine()->getManager();
+		$advert = $em->getRepository('JOPlatformBundle:Advert')->find($id);
+		if ($advert === null)
+			throw new NotFoundHttpException("L'annnce d'id ".$id." n'existe pas");
+
+		foreach ($advert->getCategories() as $category) {
+			$category->removeCategory();
+		}
 			
+		$em->flush();
 		return $this->render('JOPlatformBundle:Advert:delete.html.twig', array('advert'=>$advert));
 	}
 	
