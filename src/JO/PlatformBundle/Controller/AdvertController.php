@@ -8,18 +8,21 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Request;
 
+use JO\PlatformBundle\Entity\Advert;
+
 class AdvertController extends Controller
 {
+
 	// récupération de l'annonce correspondant a l'id
     public function viewAction($id)
 	{
-		$advert = array(
-		  'title'   => 'Recherche développpeur Symfony2',
-		  'id'      => $id,
-		  'author'  => 'Alexandre',
-		  'content' => 'Nous recherchons un développeur Symfony2 débutant sur Lyon. Blabla…',
-		  'date'    => new \Datetime()
-		);
+		$repository = $this->getDoctrine()->getManager()->getRepository('JOPlatformBundle:Advert');
+		
+		$advert = $repository->find($id);
+		
+		if($advert === null)
+			throw new NotFoundHttpException("L'annonce d'id ".$id." n'existe pas");
+		
 		return $this->render('JOPlatformBundle:Advert:view.html.twig', array('advert'=>$advert));
 	}
 	
@@ -71,6 +74,20 @@ class AdvertController extends Controller
 			return $this->redirect($this->generateUrl('jo_platform_view', array('id' => 5)));
 		}
 		
+		$advert = new Advert();
+		$advert->setTitle('Recherche développpeur Symfony2');
+		$advert->setAuthor('Alexandre');
+		$advert->setContent( 'Nous recherchons un développeur Symfony2 débutant sur Lyon. Blabla…');
+
+		// on récupère l'entity manager
+		$em = $this->getDoctrine()->getManager();
+		//on persiste l'entité (confie la gestion à doctrine)
+		$em->persist($advert);
+		
+		// commit modification
+		$em->flush();
+		
+		/*
 		// récupération du service antispam
 		$antispam = $this->container->get('jo_platform.antispam');
 		
@@ -79,15 +96,8 @@ class AdvertController extends Controller
 		if($antispam->isSpam($text))
 		{
 			throw new \Exception('Votre message a été détecté comme spam !');
-		}
-		$advert = array(
-			'title'   => 'Recherche développpeur Symfony2',
-			'id'      => 2,
-			'author'  => 'Alexandre',
-			'content' => 'Nous recherchons un développeur Symfony2 débutant sur Lyon. Blabla…',
-			'date'    => new \Datetime());
-
-		return $this->render('JOPlatformBundle:Advert:add.html.twig', array('advert'=> $advert));
+		}*/
+		return $this->render('JOPlatformBundle:Advert:add.html.twig', array('advert'=>$advert));
 	}
 
 	public function editAction($id, Request $request)
