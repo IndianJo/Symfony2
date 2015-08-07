@@ -12,146 +12,168 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Application
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+	/**
+	 * @var integer
+	 *
+	 * @ORM\Column(name="id", type="integer")
+	 * @ORM\Id
+	 * @ORM\GeneratedValue(strategy="AUTO")
+	 */
+	private $id;
 
-    /**
-    * @ORM\ManyToOne(targetEntity="JO\PlatformBundle\Entity\Advert", inversedBy="applications")
-    * @ORM\JoinColumn(nullable=false)
-    */
-    private $advert;
+	/**
+	* @ORM\ManyToOne(targetEntity="JO\PlatformBundle\Entity\Advert", inversedBy="applications")
+	* @ORM\JoinColumn(nullable=false)
+	*/
+	private $advert;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="author", type="string", length=255)
-     */
-    private $author;
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="author", type="string", length=255)
+	 */
+	private $author;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="content", type="text")
-     */
-    private $content;
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="content", type="text")
+	 */
+	private $content;
 
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="date", type="datetime")
-     */
-    private $date;
+	/**
+	 * @var \DateTime
+	 *
+	 * @ORM\Column(name="date", type="datetime")
+	 */
+	private $date;
 
-    public function __construct()
-    {
-        $this->date = new \Datetime();
-    }
+	//------------------------------------------------CONSTRUCTOR-----------------------------------------------------
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	public function __construct()
+	{
+		$this->date = new \Datetime();
+	}
 
-    /**
-     * Set author
-     *
-     * @param string $author
-     * @return Application
-     */
-    public function setAuthor($author)
-    {
-        $this->author = $author;
 
-        return $this;
-    }
+	//------------------------------------------------CALLBACK EVENT-----------------------------------------------------
+	
+	/**
+	* @ORM\PrePersist
+	*/
+	public function increaseApplication()
+	{
+		$this->getAdvert()->increaseApplication();
+	}
 
-    /**
-     * Get author
-     *
-     * @return string 
-     */
-    public function getAuthor()
-    {
-        return $this->author;
-    }
+	/**
+	* @ORM\PreRemove
+	*/
+	public function decreaseApplication()
+	{
+		$this->getAdvert()->decreaseApplication();
+	}
 
-    /**
-     * Set content
-     *
-     * @param string $content
-     * @return Application
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
+	//------------------------------------------------SETTER / GETTER-----------------------------------------------------
+	/**
+	 * Get id
+	 *
+	 * @return integer 
+	 */
+	public function getId()
+	{
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set author
+	 *
+	 * @param string $author
+	 * @return Application
+	 */
+	public function setAuthor($author)
+	{
+		$this->author = $author;
 
-    /**
-     * Get content
-     *
-     * @return string 
-     */
-    public function getContent()
-    {
-        return $this->content;
-    }
+		return $this;
+	}
 
-    /**
-     * Set date
-     *
-     * @param \DateTime $date
-     * @return Application
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
+	/**
+	 * Get author
+	 *
+	 * @return string 
+	 */
+	public function getAuthor()
+	{
+		return $this->author;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set content
+	 *
+	 * @param string $content
+	 * @return Application
+	 */
+	public function setContent($content)
+	{
+		$this->content = $content;
 
-    /**
-     * Get date
-     *
-     * @return \DateTime 
-     */
-    public function getDate()
-    {
-        return $this->date;
-    }
+		return $this;
+	}
 
-    /**
-     * Set advert
-     *
-     * @param \JO\PlatformBundle\Entity\Advert $advert
-     * @return Application
-     */
-    public function setAdvert(Advert $advert)
-    {
-        $this->advert = $advert;
+	/**
+	 * Get content
+	 *
+	 * @return string 
+	 */
+	public function getContent()
+	{
+		return $this->content;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set date
+	 *
+	 * @param \DateTime $date
+	 * @return Application
+	 */
+	public function setDate($date)
+	{
+		$this->date = $date;
 
-    /**
-     * Get advert
-     *
-     * @return \JO\PlatformBundle\Entity\Advert 
-     */
-    public function getAdvert()
-    {
-        return $this->advert;
-    }
+		return $this;
+	}
+
+	/**
+	 * Get date
+	 *
+	 * @return \DateTime 
+	 */
+	public function getDate()
+	{
+		return $this->date;
+	}
+
+	/**
+	 * Set advert
+	 *
+	 * @param \JO\PlatformBundle\Entity\Advert $advert
+	 * @return Application
+	 */
+	public function setAdvert(Advert $advert)
+	{
+		$this->advert = $advert;
+
+		return $this;
+	}
+
+	/**
+	 * Get advert
+	 *
+	 * @return \JO\PlatformBundle\Entity\Advert 
+	 */
+	public function getAdvert()
+	{
+		return $this->advert;
+	}
 }

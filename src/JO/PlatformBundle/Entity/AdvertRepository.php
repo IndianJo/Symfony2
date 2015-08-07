@@ -12,4 +12,69 @@ use Doctrine\ORM\EntityRepository;
  */
 class AdvertRepository extends EntityRepository
 {
+	public function myFindAll()
+	{
+		/*// Méthode 1 via entity manager
+		$queryBuilder = $this->_em->createQueryBuilder()
+		->select('a')
+		->from($this->_entityName, 'a');
+
+		// Méthode 2 via raccourci.
+		$queryBuilder = $this->createQueryBuilder('a');
+		$query = $queryBuilder->getQuery();
+		$result = $query->getResult();
+
+		return $result;*/
+
+		// Méthode 2 version compact
+		return $this->createQueryBuilder('a')->getQuery()->getResult();
+	}
+
+	public function myFindOne($id)
+	{
+		return $this->createQueryBuilder('a')
+		->where('a.id = :id')  //définition du paramètre :id
+			->setParameter('id', $id) // set parameter :id value to $id
+		->getQuery()
+		->getResult();
+	}
+
+	public function findByAuthorAndDate($author, $year)
+	{
+		return $this->createQueryBuilder('a')
+		->where('a.author = :author')
+			->setParameter('author', $author)
+		->andWhere('a.date < :year')
+			->setParameter('year', $year)
+		->orderBy('a.date', 'DESC')
+		->getQuery()
+		->getResult();
+	}
+
+	// méthode de stockage d'un condition qui sera utilisée plusieurs foi.
+	public function whereCurrentYear(QueryBuilder $qb)
+	{
+		$qb
+			->andWhere('a.date BETWEEN :start AND :end')
+			->setParameter('start', new \Datetime(date('Y').'-01-01'))  // Date entre le 1er janvier de cette année
+			->setParameter('end',   new \Datetime(date('Y').'-12-31'));  // Et le 31 décembre de cette année
+	}
+
+	public function getAdvertWithCategorie(array $categoryNames)
+	{
+		$qb = $this->createQueryBuilder('a');
+
+		// On fait une jointure avec l'entité Category avec pour alias « c »
+		$qb
+			->join('a.categories', 'c')
+			->addSelect('c')
+		;
+
+		// Puis on filtre sur le nom des catégories à l'aide d'un IN
+		$qb->where($qb->expr()->in('c.name', $categoryNames));
+		// La syntaxe du IN et d'autres expressions se trouve dans la documentation Doctrine
+
+		// Enfin, on retourne le résultat
+		return $qb->getQuery()->getResult();
+	}
 }
