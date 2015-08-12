@@ -1,4 +1,4 @@
-{# app/Resources/views/layout.html.twig #}
+{# src/JO/CoreBundle/Resources/views/layout.html.twig #}
 
 <!DOCTYPE html>
 <html>
@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>{% block title %}JO Plateforme{% endblock %}</title>
+  <title>{% block title %}JO MyWebSite{% endblock %}</title>
 
   {% block stylesheets %}
     {# On charge le CSS de bootstrap depuis le site directement #}
@@ -17,7 +17,7 @@
 <body>
   <div class="container">
     <div id="header" class="jumbotron">
-      <h1>Ma plateforme d'annonces</h1>
+      <h1>{% block Bundle %}Mon site web {% endblock %}</h1>
       <p>
         Ce projet est propulsé par Symfony2,
         et construit grâce au MOOC OpenClassrooms et SensioLabs.
@@ -31,9 +31,10 @@
 
     <div class="row">
       <div id="menu" class="col-md-3">
+        <a href="{{ path('jo_core_home') }}"> Accueil </a>
         <h3>Les annonces</h3>
         <ul class="nav nav-pills nav-stacked">
-          <li><a href="{{ path('jo_platform_home') }}">Accueil</a></li>
+          <li><a href="{{ path('jo_platform_home') }}">Platforme annonce</a></li>
           <li><a href="{{ path('jo_platform_add') }}">Ajouter une annonce</a></li>
         </ul>
 
@@ -50,6 +51,9 @@
 
     <footer>
       <p>The sky's the limit © {{ 'now'|date('Y') }} and beyond.</p>
+      <div align="center">
+      <a href="{{ path('jo_core_contact') }}"> Nous contact</a>
+      </div>
     </footer>
   </div>
 

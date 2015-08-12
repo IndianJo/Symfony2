@@ -1,0 +1,7 @@
+# src\JO\CoreBundle\Resources\config\routing.yml
+jo_core_home:
+    path:    /
+    defaults: { _controller: JOCoreBundle:Core:Index }
+jo_core_contact:
+    path:    /contact
+    defaults: { _controller: JOCoreBundle:Core:Contact }

@@ -1,3 +1,7 @@
+jo_core:
+    resource: "@JOCoreBundle/Resources/config/routing.yml"
+    prefix:   /
+
 jo_platform:
     resource: "@JOPlatformBundle/Resources/config/routing.yml"
     prefix:   /platform
