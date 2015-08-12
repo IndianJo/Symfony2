@@ -1,4 +1,5 @@
 Symfony
 =======
 
-A Symfony project created on August 4, 2015, 12:03 pm.
+First symfony2 project, create to descover how to user this php framework.
+
