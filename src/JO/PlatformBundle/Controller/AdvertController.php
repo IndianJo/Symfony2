@@ -210,4 +210,9 @@ class AdvertController extends Controller
 		// les variables nécessaires au template !
 		'listAdverts' => $listAdverts));
 	}
+
+	public function tradAction($name)
+	{
+		return $this->render('JOPlatformBundle:Advert:translation.html.twig', array('name' => $name));
+	}
 }

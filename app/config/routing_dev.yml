@@ -16,3 +16,7 @@ _errors:
 
 _main:
     resource: routing.yml
+
+jo_platform_translation:
+    path: /trad/{name}
+    defaults: { _controller: JOPlatformBundle:Advert:trad }
